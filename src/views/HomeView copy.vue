@@ -12,47 +12,38 @@ window.addEventListener('scroll', () => {
   } else {
     scrollY.value = 1
   }
+
 })
-//---------------------------------------------
-let animationDuration = 10
+//--------------------------------------------
 let currentSliderShowIndex = ref(0)
-let preSliderShowIndex = ref(0)
-let imgArr = computed(() => {
-  return [{ src: 'https://picsum.photos/seed/1060/1920/768' }, { src: 'https://picsum.photos/1920/768?grayscale' }, { src: 'https://picsum.photos/1920/768.jpg' }]
+let nextSliderShowIndex = computed(() => {
+  return (currentSliderShowIndex.value + 1) % imgArr.value.length
 })
-let sliderStyle = function () {
-  return {
-    animationDuration: `${animationDuration}s`,
-  }
-}
-function isShowImgHandler(index) {
-  return index === preSliderShowIndex.value || index === currentSliderShowIndex.value
-}
+let imgArr = computed(() => {
+  return [{ src: 'https://picsum.photos/id/1060/1920/768' }, { src: 'https://picsum.photos/1920/768.jpg' }, { src: 'https://picsum.photos/1920/768.jpg' }]
+})
 setInterval(() => {
-  preSliderShowIndex.value = currentSliderShowIndex.value
   currentSliderShowIndex.value = (currentSliderShowIndex.value + 1) % imgArr.value.length
-}, animationDuration * 1000 / 2)
-setInterval(() => {
-  console.log(1)
-}, 1000)
+}, 15000)
+
+function isShowImgHandler(index) {
+  return index === nextSliderShowIndex.value || index === currentSliderShowIndex.value
+}
 </script>
 
 <template>
   <section class="kv">
     <div class="kv-items" :class="{ active: isActive }">
       <img
-        :src="img.src"
-        class="animation-kv-slider"
         v-for="(img, index) in imgArr"
         :key="img.src"
+        :src="img.src"
         :class="{ active: isShowImgHandler(index) }"
-        :style="sliderStyle(index)"
+        class="animation-kv-slider"
       />
     </div>
   </section>
-  <section>
-    
-  </section>
+  <section>{{ nextSliderShowIndex }}</section>
 </template>
 
 
@@ -81,17 +72,18 @@ section {
     border: 10px solid #000;
   }
   .animation-kv-slider {
-    opacity: 0;
     position: absolute;
     display: block;
     object-fit: cover;
     object-position: center;
     width: 100%;
     height: 100%;
-    &.active {
-      animation-name: kv-slider;
-      animation-timing-function: linear;
-    }
+  }
+  .animation-kv-slider.active {
+    animation-name: kv-slider;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
   }
 }
 
